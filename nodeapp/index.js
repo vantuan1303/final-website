@@ -3,15 +3,28 @@ const app = express()
 const http = require('http')
 const winston = require('winston')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 const { PORT, HOST } = require('./helpers/utility.js')
 const indexRouter = require('./routes/index.route')
+const userRouter = require('./routes/user.route')
+const authRouter = require('./routes/auth.route')
+const postRouter = require('./routes/post.route')
+const categoryRouter = require('./routes/category.route')
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
+app.set('view engine', 'pug')
+app.set('views', './views')
+app.use(cookieParser())
 
 app.use('/', indexRouter)
+app.use('/user/', userRouter)
+app.use('/auth/', authRouter)
+app.use('/post/', postRouter)
+app.use('/category/', categoryRouter)
+
 
 const server = http.createServer(app)
 
