@@ -9,7 +9,7 @@ const connectDatabase = async () => {
         }
         mongoose.connect(url, options)
         console.log('Connect database successfully!')
-    } catch(error) {
+    } catch (error) {
         console.log(`Connect database error: ${error}`)
     }
 }

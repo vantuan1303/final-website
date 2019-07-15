@@ -5,15 +5,15 @@ const bcrypt = require('bcrypt')
 
 const create = async (name, email, password) => {
     try {
-	    const encryptedPassword = await bcrypt.hash(password, 10)//saltRounds = 10
+        const encryptedPassword = await bcrypt.hash(password, 10)//saltRounds = 10
         const newUser = new User()
         newUser.name = name
         newUser.email = email
         newUser.password = encryptedPassword
         await newUser.save()
-    } catch(error) {
+    } catch (error) {
         if (error.code === 11000) {
-        	throw "Email already exists"
+            throw "Email already exists"
         }
         throw error
     }
@@ -23,7 +23,7 @@ const blockByIds = async (userIds, tokenKey) => {
     //Admin có thể khoá nhiều user một lúc
     try {
         let signedInUser = await authController.verifyJWT(tokenKey)
-        if (signedInUser.permission !== 2){
+        if (signedInUser.permission !== 2) {
             throw "Chỉ có tài khoản admin mới có chức năng này"
         }
         userIds.forEach(async (userId) => {
@@ -34,7 +34,7 @@ const blockByIds = async (userIds, tokenKey) => {
             user.isBanned = 1
             await user.save()
         })
-    } catch(error) {
+    } catch (error) {
         throw error
     }
 }
@@ -43,7 +43,7 @@ const deleteByIds = async (userIds, tokenKey) => {
     //Admin có thể xoá nhiều user một lúc
     try {
         let signedInUser = await authController.verifyJWT(tokenKey)
-        if (signedInUser.permission !== 2){
+        if (signedInUser.permission !== 2) {
             throw "Chỉ có tài khoản admin mới có chức năng này"
         }
         userIds.forEach(async (userId) => {
@@ -54,7 +54,7 @@ const deleteByIds = async (userIds, tokenKey) => {
             await postController.deleteByAuthor(userId)
             await User.findByIdAndDelete(userId)
         })
-    } catch(error) {
+    } catch (error) {
         throw error
     }
 }

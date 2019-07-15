@@ -11,9 +11,10 @@ const userRouter = require('./routes/user.route')
 const authRouter = require('./routes/auth.route')
 const postRouter = require('./routes/post.route')
 const categoryRouter = require('./routes/category.route')
+const productRouter = require('./routes/product.route')
 
 app.use(express.static('public'))
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.set('view engine', 'pug')
 app.set('views', './views')
@@ -24,14 +25,15 @@ app.use('/user/', userRouter)
 app.use('/auth/', authRouter)
 app.use('/post/', postRouter)
 app.use('/category/', categoryRouter)
+app.use('/product/', productRouter)
 
 
 const server = http.createServer(app)
 
 const logger = winston.createLogger({
     transports: [
-      new (winston.transports.Console)(),
-      new (winston.transports.File)({ filename: '../logs/weblog.log' })
+        new (winston.transports.Console)(),
+        new (winston.transports.File)({ filename: '../logs/weblog.log' })
     ]
 })
 

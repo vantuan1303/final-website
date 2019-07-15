@@ -11,7 +11,7 @@ router.get('/show-all', async (req, res) => {
             messange: 'Show categories success',
             data: categories
         })
-    } catch(error) {
+    } catch (error) {
         res.json({
             result: 'failed',
             messange: 'Show categories error ' + error
@@ -22,13 +22,13 @@ router.get('/show-all', async (req, res) => {
 router.get('/search', async (req, res) => {
     let { text } = req.query
     try {
-        let category = await categoryController.search(text)
+        let categories = await categoryController.searchList(text)
         res.json({
             result: 'ok',
             message: 'Query success list of category',
-            data: category
+            data: categories
         })
-    } catch(error){
+    } catch (error) {
         res.json({
             result: 'failed',
             message: `Category not found: ${error}`
@@ -37,7 +37,7 @@ router.get('/search', async (req, res) => {
 })
 
 router.post('/create', async (req, res) => {
-    let {title, description} = req.body
+    let { title, description } = req.body
     let tokenKey = req.headers['x-access-token']
     try {
         let newcategory = await categoryController.create(title, description, tokenKey)
@@ -46,26 +46,26 @@ router.post('/create', async (req, res) => {
             message: 'Create new category successfully!',
             data: newcategory
         })
-	} catch(error) {
-		res.json({
+    } catch (error) {
+        res.json({
             result: 'failed',
             message: `Can not create category. Error : ${error}`
         })
-	}
+    }
 })
 
 router.put('/update', async (req, res) => {
     // res.setHeader('Access-Control-Allow-Origin', allowAccessIP)
-    let { id, title, description} = req.body
+    let { id, title, description } = req.body
     let tokenKey = req.headers['x-access-token']
     try {
-        let category = await categoryController.update(id, {title, description}, tokenKey)
+        let category = await categoryController.update(id, { title, description }, tokenKey)
         res.json({
             result: 'ok',
             message: 'Update category successfully!',
             data: category
         })
-    } catch(error){
+    } catch (error) {
         res.json({
             result: 'failed',
             message: `Can not update category: ${error}`
@@ -83,7 +83,7 @@ router.delete('/delete-by-id/:id', async (req, res) => {
             result: 'ok',
             message: 'Delete category successfully',
         })
-    } catch(error){
+    } catch (error) {
         res.json({
             result: 'failed',
             message: `Can not delete category: ${error}`

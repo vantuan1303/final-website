@@ -5,8 +5,8 @@ const CommentSchema = new Schema({
     title: String,
     rate: Number,
     content: String,
-    date: {type: Date, default: Date.now},
-    author: {type: Schema.Types.ObjectId, ref: "User"},
+    date: { type: Date, default: Date.now },
+    author: { type: Schema.Types.ObjectId, ref: "User" },
     on: {
         type: Schema.Types.ObjectId,
         required: true,
