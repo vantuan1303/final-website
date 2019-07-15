@@ -44,7 +44,7 @@ const create = async (title, description, tokenKey) => {
         })
         await newCategory.save()
         await signedInUser.categories.push(newCategory._id)
-        await signedInUser.save()
+        signedInUser.save()
         return newCategory
     } catch (error) {
         throw error
@@ -90,7 +90,7 @@ const deleteById = async (id, tokenKey) => {
             .filter(eachcategory => {
                 return category._id.toString() !== eachcategory._id.toString()
             })
-        await signedInUser.save()
+        signedInUser.save()
     } catch (error) {
         throw error
     }

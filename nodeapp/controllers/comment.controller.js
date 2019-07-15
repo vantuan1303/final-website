@@ -17,9 +17,9 @@ const addOnPost = async (comment, postId, tokenKey) => {
         })
         await newComment.save()
         await post.comments.push(newComment._id)
-        await post.save()
+        post.save()
         await signedInUser.comments.push(newComment._id)
-        await signedInUser.save()
+        signedInUser.save()
         return newComment
     } catch (error) {
         throw error
@@ -40,9 +40,9 @@ const addOnProduct = async (comment, productId, tokenKey) => {
         })
         await newComment.save()
         await product.comments.push(newComment._id)
-        await product.save()
+        product.save()
         await signedInUser.comments.push(newComment._id)
-        await signedInUser.save()
+        signedInUser.save()
         return newComment
     } catch (error) {
         throw error

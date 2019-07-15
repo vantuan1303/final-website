@@ -1,5 +1,7 @@
 const authController = require('./auth.controller')
 const Post = require('../models/post.model')
+const Comment = require('../models/comment.model')
+const User = require('../models/user.model')
 
 const add = async (post, tokenKey) => {
     let { title, content, description, tags } = post
@@ -94,10 +96,7 @@ const update = async (id, updatedPost, tokenKey) => {
         throw error
     }
 }
-// //Delete blogPost
-// //1. Delete a record in BlogPosts
-// //2. Update reference field "blogPosts" in Users
-// //=> mảng blogPosts bớt đi 1 phần tử
+
 const deleteById = async (id, tokenKey) => {
     try {
         let signedInUser = await authController.verifyJWT(tokenKey)
@@ -108,12 +107,25 @@ const deleteById = async (id, tokenKey) => {
         if (signedInUser.id !== post.author.toString()) {
             throw "Can not delete record because you are not author"
         }
+        let commentIds = await post.comments
+        for (commentId of commentIds){
+            await Comment.findByIdAndDelete(commentId)
+            let user = await User.find({
+                comments : {$in: [commentId]}
+            })
+    
+            user[0].comments = await user[0].comments.filter(item => {
+                return item._id.toString() !== commentId.toString()
+            })
+            user[0].save()
+        }
         await Post.deleteOne({ _id: id })
         signedInUser.posts = await signedInUser.posts
             .filter(eachPost => {
                 return post._id.toString() !== eachPost._id.toString()
             })
-        await signedInUser.save()
+        signedInUser.save()
+        
     } catch (error) {
         throw error
     }
