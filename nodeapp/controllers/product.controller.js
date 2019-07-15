@@ -73,8 +73,6 @@ const searchByCategory = async (text) => {
     }
 }
 
-// //Get product from date A to date B
-// //VD1: http://127.0.0.1:3000/products/queryproductsByDateRange?from=01-11-2018&to=05-11-2018
 const searchByDateRange = async (from, to) => {
     //format: dd-mm-yyyy    
     let fromDate = new Date(parseInt(from.split('-')[2]),

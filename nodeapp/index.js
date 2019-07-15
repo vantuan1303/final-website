@@ -12,6 +12,7 @@ const authRouter = require('./routes/auth.route')
 const postRouter = require('./routes/post.route')
 const categoryRouter = require('./routes/category.route')
 const productRouter = require('./routes/product.route')
+const commentRouter = require('./routes/comment.route')
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -26,6 +27,7 @@ app.use('/auth/', authRouter)
 app.use('/post/', postRouter)
 app.use('/category/', categoryRouter)
 app.use('/product/', productRouter)
+app.use('/comment/', commentRouter)
 
 
 const server = http.createServer(app)

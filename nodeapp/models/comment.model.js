@@ -7,17 +7,16 @@ const CommentSchema = new Schema({
     content: String,
     date: { type: Date, default: Date.now },
     author: { type: Schema.Types.ObjectId, ref: "User" },
-    on: {
+    commentOn: {
         type: Schema.Types.ObjectId,
         required: true,
         refPath: 'onModel'
-    },
+      },
     onModel: {
         type: String,
         required: true,
-        enum: ['Post, Product']
+        enum: ['Post', 'Product']
     }
 })
-
 const Comment = mongoose.model("Comment", CommentSchema)
 module.exports = Comment 

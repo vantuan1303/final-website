@@ -10,8 +10,8 @@ const UserSchema = new Schema({
     date: { type: Date, default: Date.now },
     categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
     products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
-    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }]
-
+    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }]
 })
 
 const User = mongoose.model('User', UserSchema)
