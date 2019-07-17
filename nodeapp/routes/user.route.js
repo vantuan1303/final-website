@@ -21,7 +21,6 @@ router.post('/register-user', async (req, res) => {
 router.post('/admin/block-by-ids', async (req, res) => {
     let tokenKey = req.headers['x-access-token']
     let { userIds } = req.body
-    userIds = userIds.split(',') //Convert string to array
     try {
         await userController.blockByIds(userIds, tokenKey)
         res.json({
@@ -39,7 +38,6 @@ router.post('/admin/block-by-ids', async (req, res) => {
 router.delete('/admin/delete-by-ids', async (req, res) => {
     let tokenKey = req.headers['x-access-token']
     let { userIds } = req.body
-    userIds = userIds.split(',') //Convert string to array
     try {
         await userController.deleteByIds(userIds, tokenKey)
         res.json({

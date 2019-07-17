@@ -15,9 +15,8 @@ const add = async (post, tokenKey) => {
             tags: arrayTags,
             author: signedInUser._id,
         })
-        await newBlogPost.save()
-        await signedInUser.posts.push(newBlogPost._id)
-        await signedInUser.save()
+        signedInUser.posts.push(newBlogPost._id)
+        signedInUser.save()
         return newBlogPost
     } catch (error) {
         throw error
@@ -28,12 +27,8 @@ const search = async (text) => {
     try {
         let posts = await Post.find({
             $or: [
-                {
-                    title: new RegExp(text, "i")
-                },
-                {
-                    content: new RegExp(text, "i")
-                }
+                { title: new RegExp(text, "i") },
+                { content: new RegExp(text, "i") }
             ],
         })
         return posts
@@ -65,9 +60,7 @@ const searchByDateRange = async (from, to) => {
 const getDetailById = async (id) => {
     try {
         let post = await Post.findById(id)
-        if (!post) {
-            throw `Can not find post with Id=${id}`
-        }
+        if (!post) throw `Can not find post with Id=${id}`
         return post
     } catch (error) {
         throw error
@@ -78,19 +71,18 @@ const update = async (id, updatedPost, tokenKey) => {
     try {
         let signedInUser = await authController.verifyJWT(tokenKey)
         let { title, content, description, tags } = updatedPost
-        let post = await Post.findById(id)
+
+        let query = {
+            ...(title && { title }),
+            ...(content && { content }),
+            ...(description && { description }),
+            ...(tags && { tags }),
+            date: Date.now()
+        }
+        let post = await Post.findOneAndUpdate({ _id: id, author: signedInUser.id }, query, { new: true })
         if (!post) {
-            throw `Can not find post with Id=${id}`
+            throw `You can not update post because you are not an author or wrong category ID`
         }
-        if (signedInUser.id !== post.author.toString()) {
-            throw "Can not update because you are not post's author"
-        }
-        post.title = !title ? post.title : title
-        post.content = !content ? post.content : content
-        post.description = !description ? post.description : description
-        post.tags = !tags ? post.tags : tags
-        post.date = Date.now()
-        await post.save()
         return post
     } catch (error) {
         throw error
@@ -102,40 +94,24 @@ const deleteById = async (id, tokenKey) => {
         let signedInUser = await authController.verifyJWT(tokenKey)
         let post = await Post.findById(id)
         if (!post) {
-            throw `Can not find blogPost with Id=${id}`
+            throw `Can not find blogPost with Id = ${id}`
         }
         if (signedInUser.id !== post.author.toString()) {
             throw "Can not delete record because you are not author"
         }
-        let commentIds = await post.comments
-        for (commentId of commentIds){
-            await Comment.findByIdAndDelete(commentId)
-            let user = await User.find({
-                comments : {$in: [commentId]}
-            })
-    
-            user[0].comments = await user[0].comments.filter(item => {
-                return item._id.toString() !== commentId.toString()
-            })
-            user[0].save()
-        }
-        await Post.deleteOne({ _id: id })
-        signedInUser.posts = await signedInUser.posts
-            .filter(eachPost => {
-                return post._id.toString() !== eachPost._id.toString()
-            })
-        signedInUser.save()
-        
-    } catch (error) {
-        throw error
-    }
-}
-
-const deleteByAuthor = async (authorId) => {
-    try {
-        await Post.deleteMany({
-            author: authorId
-        })
+        let commentIds = post.comments
+        Promise.all([
+            Comment.deleteMany({ _id: { $in: commentIds } }),
+            User.updateMany(
+                { comments: { $in: commentIds } },
+                { $pull: { comments: { $in: commentIds } } }
+            ),
+            User.updateMany(
+                { posts: id },
+                { $pull: { posts: id } }
+            ),
+            Post.deleteOne({ _id: id })
+        ])
     } catch (error) {
         throw error
     }
@@ -144,10 +120,8 @@ const deleteByAuthor = async (authorId) => {
 module.exports = {
     add,
     search,
-    // queryByCategory,
     searchByDateRange,
     getDetailById,
     update,
-    deleteById,
-    deleteByAuthor
+    deleteById
 }

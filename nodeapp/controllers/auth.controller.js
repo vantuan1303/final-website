@@ -12,10 +12,9 @@ const login = async (email, password) => {
         if (foundUser.isBanned === 1) {
             throw "User is banned. Please contact your website admin"
         }
-        let encryptedPassword = await foundUser.password
+        let encryptedPassword = foundUser.password
         let checkPassword = await bcrypt.compare(password, encryptedPassword)
         if (checkPassword === true) {
-            //Đăng nhập thành công
             let jsonObject = {
                 id: foundUser._id
             }
@@ -23,8 +22,8 @@ const login = async (email, password) => {
                 secretString, {
                     expiresIn: 86400 // Expire in 24h
                 })
-            //Trả về thông tin user kèm tokenKey
-            let userObject = await foundUser.toObject()
+            //Return user infomation with token key
+            let userObject = foundUser.toObject()
             userObject.tokenKey = tokenKey
             return userObject
         } else {

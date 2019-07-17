@@ -15,10 +15,9 @@ const addOnPost = async (comment, postId, tokenKey) => {
             commentOn: post._id,
             onModel: "Post"
         })
-        await newComment.save()
-        await post.comments.push(newComment._id)
+        post.comments.push(newComment._id)
         post.save()
-        await signedInUser.comments.push(newComment._id)
+        signedInUser.comments.push(newComment._id)
         signedInUser.save()
         return newComment
     } catch (error) {
@@ -38,16 +37,17 @@ const addOnProduct = async (comment, productId, tokenKey) => {
             commentOn: product._id,
             onModel: "Product"
         })
-        await newComment.save()
-        await product.comments.push(newComment._id)
+        product.comments.push(newComment._id)
         product.save()
-        await signedInUser.comments.push(newComment._id)
+        signedInUser.comments.push(newComment._id)
         signedInUser.save()
         return newComment
     } catch (error) {
         throw error
     }
 }
+
+
 
 
 
@@ -189,24 +189,24 @@ const addOnProduct = async (comment, productId, tokenKey) => {
 //     }
 // }
 
-// const deleteByAuthor = async (authorId) => {
-//     try {
-//         await comment.deleteMany({
-//             author: authorId
-//         })
-//     } catch (error) {
-//         throw error
-//     }
-// }
+const deleteByAuthor = async (authorId) => {
+    try {
+        await Comment.deleteMany({
+            author: authorId
+        })
+    } catch (error) {
+        throw error
+    }
+}
 
 module.exports = {
     addOnPost,
-    addOnProduct
+    addOnProduct,
     // search,
     // searchByCategory,
     // searchByDateRange,
     // getDetailById,
     // update,
     // deleteById,
-    // deleteByAuthor
+    deleteByAuthor
 }

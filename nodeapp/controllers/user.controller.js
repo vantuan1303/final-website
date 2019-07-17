@@ -1,6 +1,11 @@
 const User = require('../models/user.model')
+const Post = require('../models/post.model')
+const Category = require('../models/category.model')
+const Comment = require('../models/comment.model')
 const authController = require('./auth.controller')
-const postController = require('./post.controller')
+
+// const postController = require('./post.controller')
+// const categoryController = require('./category.controller')
 const bcrypt = require('bcrypt')
 
 const create = async (name, email, password) => {
@@ -10,50 +15,46 @@ const create = async (name, email, password) => {
         newUser.name = name
         newUser.email = email
         newUser.password = encryptedPassword
-        await newUser.save()
+        newUser.save()
     } catch (error) {
-        if (error.code === 11000) {
-            throw "Email already exists"
-        }
+        if (error.code === 11000) throw "Email already exists"
         throw error
     }
 }
 
 const blockByIds = async (userIds, tokenKey) => {
-    //Admin có thể khoá nhiều user một lúc
+    let arrayUserIds = userIds.split(',').map(item => {
+        return item.trim()
+    })
     try {
         let signedInUser = await authController.verifyJWT(tokenKey)
         if (signedInUser.permission !== 2) {
             throw "Chỉ có tài khoản admin mới có chức năng này"
         }
-        userIds.forEach(async (userId) => {
-            let user = await User.findById(userId)
-            if (!user) { //Ko thấy user
-                return
-            }
-            user.isBanned = 1
-            await user.save()
-        })
+        User.updateMany({ _id: { $in: arrayUserIds } }, { isBanned: 1 })
     } catch (error) {
         throw error
     }
 }
 
 const deleteByIds = async (userIds, tokenKey) => {
-    //Admin có thể xoá nhiều user một lúc
+    let arrayUserIds = userIds.split(',').map(item => {
+        return item.trim()
+    })
     try {
         let signedInUser = await authController.verifyJWT(tokenKey)
         if (signedInUser.permission !== 2) {
-            throw "Chỉ có tài khoản admin mới có chức năng này"
+            throw "Only admin can do this action"
         }
-        userIds.forEach(async (userId) => {
-            let user = await User.findById(userId)
-            if (!user) { //Ko thấy user
-                return
+        for (userId of arrayUserIds) {
+            let user = await User.findByIdAndDelete(userId)
+            if (!user) {
+                throw "User not found"
             }
-            await postController.deleteByAuthor(userId)
-            await User.findByIdAndDelete(userId)
-        })
+            await Post.deleteMany({ author: authorId })
+            await Comment.deleteMany({ author: authorId })
+            // await Category.deleteMany({ author: authorId })
+        }
     } catch (error) {
         throw error
     }

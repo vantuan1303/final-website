@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+mongoose.set('useFindAndModify', false);
 const connectDatabase = async () => {
     try {
         let url = 'mongodb://tuan:12345678@localhost:27018/db'
